@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>pembuat apk</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="sebuah web konvert web to apk free"> 
+  <meta name="google-site-verification" content="mpZXVrORh_EsUHsFjdu0GumjK0Utz1y-Q5KM7buBxAY" />
+  <meta name="keywords" content="website, toapp, konvert, web2app, konvertWebToapk, konverting, konvert, free">
+  <meta name="author" content="Rizz|Deploy">
+  <meta property="og:title" content="Web2App Builder">
+  <meta property="og:description" content="web konvert link to apk">
+  <meta property="og:image" content="https://example.com/preview.png">
+  <meta property="og:url" content="www.web2app.zone.id">
+  <meta property="og:type" content="website">
+  <meta name="robots" content="index, follow">
+  <link rel="shortcut icon" href="https://files.catbox.moe/1lppyw.jpg" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* DEFINISI WARNA: MENAMBAH VARIASI UNTUK TEMA */
+    :root {
+      --primary: #4361ee;
+      --primary-light: #2d3b8a;
+      --danger: #ef4444;
+      --success: #22c55e;
+      
+      /* LIGHT THEME DEFAULTS (karena body menggunakan var(--bg-color)) */
+      --text-color: #f8fafc;
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --gray: #94a3b8;
+      --gray-light: #334155;
+    }
+
+    /* DARK MODE STYLES */
+    body.light-mode {
+      --text-color: #1e293b;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --gray: #64748b;
+      --gray-light: #cbd5e1;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center; 
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      color: var(--text-color); /* Menggunakan --text-color */
+      transition: background 0.3s, color 0.3s;
+    }
+    
+    /* STYLES BARU UNTUK WIDGET ATAS (BATTERY, LANGUAGE, THEME) */
+    .top-widgets {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      z-index: 100;
+    }
+    .top-widgets .left-icons,
+    .top-widgets .right-icons {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .widget-icon {
+      font-size: 1.25rem;
+      color: var(--gray);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .widget-icon:hover {
+      color: var(--primary);
+    }
+    /* Battery Styles */
+    .battery-status {
+      display: flex;
+      align-items: center;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+    .battery-icon {
+      margin-left: 0.25rem;
+      font-size: 1.1rem;
+    }
+
+    /* LANGUAGE SELECTOR STYLES */
+    #langSelect {
+      background: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.4rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      appearance: none; /* Menghilangkan default arrow */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%2394a3b8' d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.3rem center;
+      background-size: 1em;
+      padding-right: 1.5rem;
+    }
+    /* END WIDGET STYLES */
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.3);
+      padding: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp .5s ease-out forwards;
+      border: 1px solid var(--border-color);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .logo-icon { font-size: 1.75rem; color: var(--primary); }
+    .logo-text { font-size: 1.5rem; font-weight: 600; color: var(--text-color); } /* Menggunakan --text-color */
+    .form-group { margin-bottom: 1.25rem; position: relative; }
+    .form-label {
+      display: block;
+      margin-bottom: .5rem;
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--text-color); /* Menggunakan --text-color */
+    }
+    .form-control {
+      width: 100%;
+      padding: .75rem 1rem .75rem 2.5rem;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: .5rem;
+      font-size: .95rem;
+      transition: all .3s ease;
+      color: var(--text-color); /* Menggunakan --text-color */
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67,97,238,.2);
+    }
+    .input-icon {
+      position: absolute;
+      top: 50%;
+      left: 1rem;
+      transform: translateY(-50%);
+      color: var(--gray);
+      font-size: 1rem;
+    }
+    .btn {
+      width: 100%;
+      padding: .75rem;
+      border-radius: .5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      transition: background .3s ease;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: #3a56d4; }
+    .btn:disabled { background: var(--gray-light); color: var(--gray); cursor: not-allowed; }
+    .alert {
+      padding: .9rem;
+      border-left: 4px solid var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      border-radius: .5rem;
+      margin-bottom: 1.5rem;
+      font-size: .95rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .hidden { display: none; }
+    .progress-box {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: .95rem;
+      color: var(--gray);
+    }
+    .progress-bar {
+      height: 6px;
+      background: var(--gray-light);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: .5rem;
+    }
+    .progress-bar div {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width .3s ease;
+    }
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: .85rem;
+      color: var(--gray);
+    }
+    .footer a { color: var(--primary); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    .upload-status {
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      color: var(--gray);
+    }
+    .status-success {
+      color: var(--success);
+    }
+    .status-error {
+      color: var(--danger);
+    }
+    #keyInfo {
+      background: var(--bg-color);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="top-widgets">
+    <div class="left-icons">
+      <select id="langSelect" title="Ganti Bahasa">
+        <option value="id">Bahasa Indonesia</option>
+        <option value="en">English</option>
+        <option value="ms">Malaysia</option>
+        <option value="bd">Bangladesh</option>
+        <option value="th">Thailand</option>
+        <option value="ru">Rusia</option>
+        <option value="cn">China</option>
+      </select>
+      <i class="fas fa-sun widget-icon" id="themeToggle" title="Ubah Tampilan"></i>
+    </div>
+    
+    <div class="right-icons">
+      <div class="battery-status">
+        <span id="batteryLevel">--%</span>
+        <i class="fas fa-battery-empty battery-icon" id="batteryIcon" title="Status Baterai"></i>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon"><i class="fas fa-globe"></i></div>
+      <div class="logo-text">pembuat apk</div>
+    </div>
+
+    <form id="builderForm" autocomplete="off">
+      <div class="form-group">
+        <label class="form-label" for="url">URL Website</label>
+        <div style="position:relative">
+          <i class="fas fa-link input-icon"></i>
+          <input type="url" id="url" class="form-control" placeholder="https://example.com" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="appName">Nama Aplikasi</label>
+        <div style="position:relative">
+          <i class="fas fa-mobile-alt input-icon"></i>
+          <input type="text" id="appName" class="form-control" placeholder="MyApp" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email Kamu</label>
+        <div style="position:relative">
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" id="email" class="form-control" placeholder="you@mail.com" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="iconFile">Ikon Aplikasi</label>
+        <input type="file" id="iconFile" class="form-control" accept="image/*" required>
+        <div id="uploadStatus" class="upload-status hidden"></div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        <i class="fas fa-hammer"></i> Build APK
+      </button>
+    </form>
+
+    <div id="progress" class="progress-box hidden">
+      <p><i class="fas fa-spinner fa-spin"></i> <span id="progText">Mengunggah ikon…</span></p>
+      <div class="progress-bar"><div id="progBar"></div></div>
+    </div>
+
+    <div id="result" class="hidden">
+      <p style="margin-top:1.5rem;font-size:.95rem;color:var(--text-color)">
+        <i class="fas fa-check-circle" style="color:#22c55e"></i> APK berhasil dibuat!
+      </p>
+      <a id="dlApk" class="btn btn-primary" href="#" download>
+        <i class="fas fa-download"></i> Download APK
+      </a>
+      <details style="margin-top:1rem;font-size:.8rem;color:var(--gray)">
+        <summary>Info Lainya</summary>
+        <pre id="keyInfo" style="background:#f6f8fa;padding:.7rem;border-radius:.4rem;overflow:auto"></pre>
+      </details>
+    </div>
+
+    <div class="alert hidden" id="errorAlert">
+      <i class="fas fa-exclamation-circle"></i>
+      <span id="errorMsg"></span>
+    </div>
+
+    <div class="footer">
+      Powered by <a href="https://wa.me/6283109105308" target="_blank">𝗜𝗯𝗼𝘆𝘆ᝰ.ᐟ 𓂸</a>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const form = $('builderForm');
+    const progr = $('progress');
+    const result = $('result');
+    const btn = $('submitBtn');
+    const progText = $('progText');
+    const progBar = $('progBar');
+    const errorAlert = $('errorAlert');
+    const errorMsg = $('errorMsg');
+    const uploadStatus = $('uploadStatus');
+
+    function showError(message) {
+      errorMsg.textContent = message;
+      errorAlert.classList.remove('hidden');
+      setTimeout(() => {
+        errorAlert.classList.add('hidden');
+      }, 5000);
+    }
+    
+    // ==========================================================
+    // JS BARU: WIDGET FUNCTIONALITY
+    // ==========================================================
+    
+    // 1. Theme Toggle (Gelap/Terang)
+    const themeToggle = $('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      
+      // Mengubah ikon berdasarkan tema
+      if (isLight) {
+        themeToggle.classList.remove('fa-sun');
+        themeToggle.classList.add('fa-moon');
+      } else {
+        themeToggle.classList.remove('fa-moon');
+        themeToggle.classList.add('fa-sun');
+      }
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+
+    // Cek tema saat load
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-mode');
+      themeToggle.classList.remove('fa-sun');
+      themeToggle.classList.add('fa-moon');
+    }
+
+    // 2. Battery Status (Hanya berfungsi pada browser yang mendukung Battery Status API, biasanya di Android WebView/Chrome)
+    function updateBatteryStatus(battery) {
+      const level = Math.round(battery.level * 100);
+      $('batteryLevel').textContent = `${level}%`;
+      const icon = $('batteryIcon');
+      
+      // Atur icon berdasarkan level
+      icon.className = 'battery-icon fas';
+      if (battery.charging) {
+        icon.classList.add('fa-bolt');
+      } else if (level > 90) {
+        icon.classList.add('fa-battery-full');
+      } else if (level > 70) {
+        icon.classList.add('fa-battery-three-quarters');
+      } else if (level > 40) {
+        icon.classList.add('fa-battery-half');
+      } else if (level > 10) {
+        icon.classList.add('fa-battery-quarter');
+      } else {
+        icon.classList.add('fa-battery-empty');
+      }
+      
+      if (level <= 20 && !battery.charging) {
+        icon.style.color = 'var(--danger)'; // Baterai merah jika low
+      } else {
+        icon.style.color = 'var(--gray)';
+      }
+    }
+
+    if ('getBattery' in navigator) {
+      navigator.getBattery().then(battery => {
+        updateBatteryStatus(battery);
+        battery.addEventListener('levelchange', () => updateBatteryStatus(battery));
+        battery.addEventListener('chargingchange', () => updateBatteryStatus(battery));
+      });
+    } else {
+      // Sembunyikan jika tidak ada dukungan API
+      const batteryStatus = document.querySelector('.battery-status').parentElement;
+      if (batteryStatus) batteryStatus.classList.add('hidden');
+    }
+    
+    // 3. Language Selector
+    // (Fungsionalitas ganti bahasa di sini hanya mengubah nilai, 
+    // untuk benar-benar mengganti teks di halaman diperlukan file JSON/objek terjemahan)
+    $('langSelect').addEventListener('change', function() {
+        console.log('Bahasa diganti ke: ' + this.value);
+        // Di sini Anda dapat menambahkan logika untuk memuat file terjemahan
+    });
+    
+    // ==========================================================
+    // END JS BARU
+    // ==========================================================
+
+    async function uploadIcon(file) {
+      uploadStatus.classList.remove('hidden');
+      uploadStatus.textContent = 'Mengunggah ikon...';
+      uploadStatus.className = 'upload-status';
+
+      // list upload nyee
+      const uploadServices = [
+        {
+          name: 'ImgBB',
+          url: 'https://api.imgbb.com/1/upload?key=566c47dca8956780bae3b7bbfb1e4bef', // kalo eror ganti key lu sndiri di https://api.imgbb.com/
+          method: 'POST',
+          body: (file) => {
+            const formData = new FormData();
+            formData.append('image', file);
+            return formData;
+          },
+          processResponse: async (response) => {
+            const data = await response.json();
+            return data.data.url;
+          }
+        },
+        {
+          name: 'Catbox',
+          url: 'https://catbox.moe/user/api.php',
+          method: 'POST',
+          body: (file) => {
+            const formData = new FormData();
+            formData.append('fileToUpload', file);
+            formData.append('reqtype', 'fileupload');
+            return formData;
+          },
+          processResponse: async (response) => {
+            return await response.text();
+          }
+        },
+        {
+          name: 'UploadCC',
+          url: 'https://upload.cc/index.php/upload',
+          method: 'POST',
+          body: (file) => {
+            const formData = new FormData();
+            formData.append('uploaded_file[]', file);
+            return formData;
+          },
+          processResponse: async (response) => {
+            const data = await response.json();
+            if (data.success && data.files && data.files.length > 0) {
+              return `https://upload.cc/${data.files[0].hash}`;
+            }
+            throw new Error('Upload gagal');
+          }
+        }
+      ];
+
+      for (const service of uploadServices) {
+        try {
+          uploadStatus.textContent = `Mencoba mengunggah ke ${service.name}...`;
+          
+          // Buat timeout untuk jawa
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 30000); 
+          
+          const response = await fetch(service.url, {
+            method: service.method,
+            body: service.body(file),
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const imageUrl = await service.processResponse(response);
+          
+          if (!imageUrl) {
+            throw new Error('Tidak mendapatkan URL gambar');
+          }
+          
+          uploadStatus.textContent = `Berhasil mengunggah ke ${service.name}`;
+          uploadStatus.classList.add('status-success');
+          return imageUrl;
+        } catch (error) {
+          console.warn(`Upload ke ${service.name} gagal:`, error);
+        }
+      }
+      
+      throw new Error('Semua layanan upload gambar gagal. Silakan coba lagi nanti.');
+    }
+
+    function animateProgress(tMin = 3) {
+      const total = tMin * 60 * 1000;
+      const start = Date.now();
+      const iv = setInterval(() => {
+        const elap = Date.now() - start;
+        const pct = Math.min(90, Math.round((elap / total) * 100));
+        progBar.style.width = pct + '%';
+        if (pct === 90) clearInterval(iv);
+      }, 1000);
+      return () => clearInterval(iv); 
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      btn.disabled = true;
+      errorAlert.classList.add('hidden');
+      progr.classList.remove('hidden');
+      result.classList.add('hidden');
+      const stopProg = animateProgress(3);
+
+      try {
+        const url = $('url').value.trim();
+        const appName = $('appName').value.trim();
+        const email = $('email').value.trim();
+        const imgFile = $('iconFile').files[0];
+        
+        if (!imgFile) throw new Error('Pilih ikon dulu');
+
+        try {
+          new URL(url);
+        } catch (e) {
+          throw new Error('URL tidak valid');
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          throw new Error('Format email tidak valid');
+        }
+
+        progText.textContent = 'Mengunggah ikon…';
+        const iconUrl = await uploadIcon(imgFile);
+
+        progText.textContent = 'Proceessing Builder…';
+        const apiUrl = 'https://api.fikmydomainsz.xyz/tools/toapp/build-complete' +
+          '?url=' + encodeURIComponent(url) +
+          '&email=' + encodeURIComponent(email) +
+          '&appName=' + encodeURIComponent(appName) +
+          '&appIcon=' + encodeURIComponent(iconUrl);
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 374600); // Timeout 5 menit an 
+        
+        const response = await fetch(apiUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const job = await response.json();
+        if (!job.status) throw new Error(job.error || 'Build gagal');
+
+        stopProg();
+        progBar.style.width = '100%';
+
+        $('dlApk').href = job.downloadUrl;
+        $('keyInfo').textContent =
+          `storePass : ${job.storePass}
+keyPass   : ${job.keyPass}
+keySha    : ${job.keySha}
+package   : ${job.packageName}`;
+        progr.classList.add('hidden');
+        result.classList.remove('hidden');
+
+      } catch (err) {
+        stopProg();
+        progr.classList.add('hidden');
+        btn.disabled = false;
+        showError('Error: ' + err.message);
+        console.error(err);
+      }
+    });
+
+    $('iconFile').addEventListener('change', function() {
+      const file = this.files[0];
+      if (file) {
+        if (!file.type.match('image.*')) {
+          showError('File harus berupa gambar (PNG/JPG)');
+          this.value = '';
+          return;
+        }
+        
+        if (file.size > 5 * 1024 * 1024) {
+          showError('Ukuran file maksimal 5MB');
+          this.value = '';
+          return;
+        }
+        
+        uploadStatus.classList.remove('hidden');
+        uploadStatus.textContent = 'File siap diunggah: ' + file.name;
+        uploadStatus.className = 'upload-status status-success';
+      }
+    });
+  </script>
+</body>
+</html>
